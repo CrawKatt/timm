@@ -1,0 +1,297 @@
+{
+  "menu": {
+    "sounds": [
+      "timm:creating_memories",
+      "timm:generating_worlds",
+      "timm:idle",
+      "timm:infinite_realities",
+      "timm:menu-02",
+      "timm:promised_lans"
+    ]
+  },
+
+  "badlands":{
+    "sounds": [
+      "timm:echoes_of_the_canyon",
+      "timm:the_final_grain",
+      "timm:track_6"
+    ]
+  },
+
+  "bamboo_jungle": {
+    "sounds": [
+      "timm:thin_trees"
+    ]
+  },
+
+  "beach":{
+    "sounds": [
+      "timm:track_11",
+      "timm:turtles_retreat"
+    ]
+  },
+
+  "birch_forest": {
+    "sounds": [
+      "timm:betulina",
+      "timm:chateau",
+      "timm:juagos_guago",
+      "timm:lost_concepts_broken_dreams",
+      "timm:rats_on_saturn",
+      "timm:track_12"
+    ]
+  },
+
+  "cherry_grove": {
+    "sounds": [
+      "timm:as_the_sakura_blossoms",
+      "timm:track_4",
+      "timm:zen_blossoms"
+    ]
+  },
+
+  "cold_ocean": {
+    "sounds": [
+      "timm:choral_vortex",
+      "timm:guardians_anthem",
+      "timm:lurk",
+      "timm:sea_foam"
+    ]
+  },
+
+  "dark_forest": {
+    "sounds": [
+      "timm:lost_in_a_forest",
+      "timm:lost_rituals",
+      "timm:ruins_of_dukneyth",
+      "timm:spellbound",
+      "timm:terrible_plants",
+      "timm:the_wanderer"
+    ]
+  },
+
+  "deep_dark": {
+    "sounds": [
+      "timm:ancients_lament",
+      "timm:city_of_sculk",
+      "timm:depths_unseen",
+      "timm:echoes",
+      "timm:the_ancients_hymn",
+      "timm:vengeful_shade"
+    ]
+  },
+
+  "desert": {
+    "sounds": [
+      "timm:56e218",
+      "timm:cereus",
+      "timm:its_cactie_not_cactus",
+      "timm:lack_of_water",
+      "timm:osiriss_tomb",
+      "timm:the_wind_blows",
+      "timm:track_5"
+    ]
+  },
+
+  "dripstone_caves": {
+    "sounds": [
+      "timm:crystal_echoes",
+      "timm:stalagmites"
+    ]
+  },
+
+  "flower_forest": {
+    "sounds": [
+      "timm:flower_bed",
+      "timm:ii",
+      "timm:pins",
+      "timm:track_13"
+    ]
+  },
+
+  "forest": {
+    "sounds": [
+      "timm:friday",
+      "timm:the_peaceful_grove",
+      "timm:there_in_the_trees"
+    ]
+  },
+
+  "ice_spikes": {
+    "sounds":[
+      "timm:fracturescape",
+      "timm:subzero"
+    ]
+  },
+
+  "jungle": {
+    "sounds": [
+      "timm:verdant_canopy"
+    ]
+  },
+
+  "lush_caves": {
+    "sounds": [
+      "timm:axolotls_dream",
+      "timm:pillars_of_moss",
+      "timm:pst",
+      "timm:subterrarium",
+      "timm:the_monk",
+      "timm:to_eat_a_glowberry"
+    ]
+  },
+
+  "meadow": {
+    "sounds": [
+      "timm:export",
+      "timm:ruminance",
+      "timm:swaying_fields",
+      "timm:track_8"
+    ]
+  },
+
+  "mountains": {
+    "sounds": [
+      "timm:an_early_frost",
+      "timm:cascadia",
+      "timm:mountain-03",
+      "timm:summit"
+    ]
+  },
+
+  "mushroom_fields": {
+    "sounds": [
+      "timm:distant_isles",
+      "timm:fungusgirl",
+      "timm:tulu"
+    ]
+  },
+
+  "ocean": {
+    "sounds": [
+      "timm:choral_vortex",
+      "timm:guardians_anthem",
+      "timm:musical_waves",
+      "timm:kart_minne",
+      "timm:multicellular_menagerie",
+      "timm:sea_foam"
+    ]
+  },
+
+  "plains": {
+    "sounds": [
+      "timm:1752",
+      "timm:home",
+      "timm:road_to_samwere",
+      "timm:the_pinkest_sheep",
+      "timm:visualizing_home"
+    ]
+  },
+
+  "river": {
+    "sounds": [
+      "timm:nap_on_the_riverbed",
+      "timm:rowing_along"
+    ]
+  },
+
+  "savanna": {
+    "sounds": [
+      "timm:alcatraz",
+      "timm:armadillos_dream",
+      "timm:scattered_blocks"
+    ]
+  },
+
+  "snow_plains": {
+    "sounds": [
+      "timm:doctor_pavlolich",
+      "timm:nataryuk",
+      "timm:paiva_lumessa",
+      "timm:polar_t_block",
+      "timm:snowmans_home",
+      "timm:song_of_captivity",
+      "timm:star_flakes"
+    ]
+  },
+
+  "swamp": {
+    "sounds": [
+      "timm:frogs_lullaby",
+      "timm:frogstep",
+      "timm:through_the_mud"
+    ]
+  },
+
+  "taiga": {
+    "sounds": [
+      "timm:and_all_goes_quiet",
+      "timm:boreal_december",
+      "timm:mossy_stones",
+      "timm:surhg",
+      "timm:the_box_of_pine",
+      "timm:whispers_from_the_woods"
+    ]
+  },
+
+  "warm_ocean": {
+    "sounds": [
+      "timm:fish_soup",
+      "timm:light_of_a_cucumber",
+      "timm:placid_shores",
+      "timm:track_2"
+    ]
+  },
+
+  "windy_hills": {
+    "sounds": [
+      "timm:beautiful_breeze",
+      "timm:cascadia"
+    ]
+  },
+
+  "basalt_deltas": {
+    "sounds": [
+      "timm:atomic_cubes",
+      "timm:scorched_earth"
+    ]
+  },
+
+  "crimson_forest": {
+    "sounds": [
+      "timm:lurid",
+      "timm:prototaxites"
+    ]
+  },
+
+  "nether_wastes": {
+    "sounds": [
+      "timm:appletrees_demise",
+      "timm:burning_etherealism",
+      "timm:flint_and_steel",
+      "timm:lava_pools",
+      "timm:track_3",
+      "timm:track_7",
+      "timm:track_9"
+    ]
+  },
+
+  "soul_sand_valley": {
+    "sounds": [
+      "timm:lost_souls",
+      "timm:script4506",
+      "timm:soulweaver"
+    ]
+  },
+
+  "end": {
+    "sounds": [
+      "timm:abyss_archipelago",
+      "timm:freedom_for_all",
+      "timm:pillars_of_obsidian",
+      "timm:pro-gen_islands",
+      "timm:the_dragons_home",
+      "timm:when_the_endless_eternity_fades"
+    ]
+  }
+}
