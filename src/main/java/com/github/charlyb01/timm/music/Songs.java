@@ -45,7 +45,7 @@ public class Songs {
                     jsonReader.endObject();
                 } else {
                     String song = jsonReader.nextName();
-                    ResourceLocation songId = new ResourceLocation(song);
+                    ResourceLocation songId = ResourceLocation.tryParse(song);
                     String songName = null;
                     String songUrl = null;
 

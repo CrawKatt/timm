@@ -33,7 +33,7 @@ public class Timm
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static ResourceLocation id(final String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public Timm(IEventBus modEventBus, ModContainer modContainer)

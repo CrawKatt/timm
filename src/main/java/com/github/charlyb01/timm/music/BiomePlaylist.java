@@ -24,8 +24,8 @@ import java.util.Optional;
 
 public class BiomePlaylist {
     public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
-    private static final ResourceLocation CREATIVE_ID = new ResourceLocation("creative");
-    private static final ResourceLocation MENU_ID = new ResourceLocation("menu");
+    private static final ResourceLocation CREATIVE_ID = ResourceLocation.tryParse("creative");
+    private static final ResourceLocation MENU_ID = ResourceLocation.tryParse("menu");
 
     public static Music getMusicSound(ResourceLocation biomeId, RandomSource random) {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(biomeId);
@@ -86,14 +86,14 @@ public class BiomePlaylist {
                     jsonReader.endObject();
                 } else {
                     String biomeName = jsonReader.nextName();
-                    ResourceLocation biomeId = new ResourceLocation(biomeName);
+                    ResourceLocation biomeId = ResourceLocation.tryParse(biomeName);
                     ArrayList<ResourceLocation> musics = new ArrayList<>();
 
                     if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
                         jsonReader.beginArray();
                         while (jsonReader.hasNext()) {
                             String musicId = jsonReader.nextString();
-                            musics.add(new ResourceLocation(musicId));
+                            musics.add(ResourceLocation.tryParse(musicId));
                         }
                         jsonReader.endArray();
                     }
