@@ -2,6 +2,7 @@ package com.github.charlyb01.timm.mixin;
 
 import com.github.charlyb01.timm.command.NowPlayingCmd;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.MusicInfo;
 import net.minecraft.client.sounds.MusicManager;
 import net.minecraft.sounds.Music;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,7 @@ public class MusicManagerMixin {
     @Shadow @Nullable private SoundInstance currentMusic;
 
     @Inject(method = "startPlaying", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/SoundManager;play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V", shift = At.Shift.AFTER))
-    private void saveMusicIdentifier(Music music, CallbackInfo ci) {
+    private void saveMusicIdentifier(MusicInfo music, CallbackInfo ci) {
         if (this.currentMusic == null || this.currentMusic.getSound() == null) return;
         NowPlayingCmd.SONG_ID = this.currentMusic.getSound().getLocation();
     }

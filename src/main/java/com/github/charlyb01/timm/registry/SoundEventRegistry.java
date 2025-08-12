@@ -74,7 +74,7 @@ public class SoundEventRegistry {
                 SoundEvent sound = entry.getValue().get();
                 ResourceLocation id = entry.getKey();
 
-                Holder.Reference<SoundEvent> holder = BuiltInRegistries.SOUND_EVENT.getHolder(BuiltInRegistries.SOUND_EVENT.getResourceKey(sound).orElseThrow()).orElseThrow();
+                Holder.Reference<SoundEvent> holder = BuiltInRegistries.SOUND_EVENT.get(BuiltInRegistries.SOUND_EVENT.getResourceKey(sound).orElseThrow()).orElseThrow();
 
                 SOUNDEVENT_BY_ID.put(id, holder);
             }
