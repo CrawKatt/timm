@@ -16,6 +16,8 @@ import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -66,19 +68,19 @@ public class Songs {
                 }
             }
             Timm.LOGGER.info("Songs successfully initialized");
-        } catch (IOException why) {
+        } catch (IOException | URISyntaxException why) {
             Timm.LOGGER.error("Error reading songs file: {}", why.getMessage());
         }
     }
 
-    private static MutableComponent makeSongText(ResourceLocation identifier, String name, String url) {
+    private static MutableComponent makeSongText(ResourceLocation identifier, String name, String url) throws URISyntaxException {
         MutableComponent song = Component.literal(name == null
                 ? identifier.toString()
                 : name);
         if (url != null) {
             song.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
                     .withUnderlined(true)
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
+                    .withClickEvent(new ClickEvent.OpenUrl(new URI(url))));
         }
         return song;
     }
