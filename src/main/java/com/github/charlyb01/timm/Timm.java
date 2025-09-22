@@ -5,6 +5,7 @@ import com.github.charlyb01.timm.config.Config;
 import com.github.charlyb01.timm.config.ModConfigScreen;
 import com.github.charlyb01.timm.music.BiomePlaylist;
 import com.github.charlyb01.timm.music.Songs;
+import com.github.charlyb01.timm.music.StructurePlaylist;
 import com.github.charlyb01.timm.registry.SoundEventRegistry;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,7 @@ public class Timm
             event.enqueueWork(() -> {
                 BiomePlaylist.init();
                 Songs.init();
+                StructurePlaylist.init();
             });
         }
 
