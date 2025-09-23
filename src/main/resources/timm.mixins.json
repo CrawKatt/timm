@@ -6,7 +6,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MinecraftMixin",
-    "MusicManagerMixin",
+    "ClientLevelMixin",
+    "MusicManagerAccessor",
     "SoundManagerMixin"
   ],
   "injectors": {
