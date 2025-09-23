@@ -37,6 +37,10 @@ public class Timm
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
+    public static void debugLog(String debugString) {
+        LOGGER.info(debugString);
+    }
+
     public Timm(IEventBus modEventBus, ModContainer modContainer)
     {
         NeoForge.EVENT_BUS.addListener(ClientModEvents::onClientCommands);

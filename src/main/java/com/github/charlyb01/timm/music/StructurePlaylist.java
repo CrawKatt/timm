@@ -81,9 +81,7 @@ public class StructurePlaylist {
             return filePath;
         }
 
-        if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Player structure_playlists.json not found, using default one");
-        }
+        Timm.debugLog("Player structure_playlists.json not found, using default one");
 
         Optional<? extends ModContainer> container = ModList.get().getModContainerById(Timm.MOD_ID);
         if (container.isEmpty()) {

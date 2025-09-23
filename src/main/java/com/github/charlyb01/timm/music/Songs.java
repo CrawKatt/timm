@@ -93,9 +93,7 @@ public class Songs {
             return filePath;
         }
 
-        if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Player songs.json not found using default one");
-        }
+        Timm.debugLog("Player songs.json not found using default one");
 
         Optional<? extends ModContainer> container = ModList.get().getModContainerById(Timm.MOD_ID);
         if (container.isEmpty()) {

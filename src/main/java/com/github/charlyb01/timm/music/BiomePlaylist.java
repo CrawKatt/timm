@@ -117,9 +117,7 @@ public class BiomePlaylist {
             return filePath;
         }
 
-        if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Player biome_playlist.json not found, using default one");
-        }
+        Timm.debugLog("Player biome playlist.json not found, using default one");
 
         Optional<? extends ModContainer> container = ModList.get().getModContainerById(Timm.MOD_ID);
         if (container.isEmpty()) {

@@ -6,9 +6,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 public class CommandRegistry {
     public static void init(RegisterClientCommandsEvent event) {
-        if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Registering client-side commands");
-        }
+        Timm.debugLog("Registering commands");
 
         HelpCmd.register(event.getDispatcher());
         NowPlayingCmd.register(event.getDispatcher());
