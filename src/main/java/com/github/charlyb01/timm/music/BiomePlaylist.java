@@ -23,18 +23,26 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class BiomePlaylist {
+    private static final ResourceLocation UNDEFINED_BIOME = Timm.id("undefined_biome");
+    public static ResourceLocation CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
     public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
     private static final ResourceLocation CREATIVE_ID = ResourceLocation.tryParse("creative");
     private static final ResourceLocation MENU_ID = ResourceLocation.tryParse("menu");
 
     public static Music getMusicSound(ResourceLocation biomeId, RandomSource random) {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(biomeId);
-        if (musics == null || musics.isEmpty()) return null;
+        if (musics == null || musics.isEmpty()) {
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+        }
 
         ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
-        if (soundEvent == null) return null;
+        if (soundEvent == null) {
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
+        }
 
+        CURRENT_BIOME_EVENT = soundEventId;
         return new Music(
                 soundEvent,
                 Config.MIN_DELAY.get() * 20,
