@@ -33,6 +33,14 @@ public class ModConfigScreen {
                 .build());
 
         general.addEntry(entryBuilder
+                .startIntField(Component.literal("Fade Duration"), Config.FADE_DURATION.get())
+                .setDefaultValue(5)
+                .setMin(5)
+                .setMax(10)
+                .setSaveConsumer(Config.FADE_DURATION::set)
+                .build());
+
+        general.addEntry(entryBuilder
                 .startBooleanToggle(Component.literal("Print on Skip"), Config.PRINT_ON_SKIP.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(Config.PRINT_ON_SKIP::set)

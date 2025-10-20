@@ -6,6 +6,7 @@ public class Config {
     public static final ModConfigSpec SPEC;
     public static final ModConfigSpec.IntValue MIN_DELAY;
     public static final ModConfigSpec.IntValue MAX_DELAY;
+    public static final ModConfigSpec.IntValue FADE_DURATION;
     public static final ModConfigSpec.BooleanValue PRINT_ON_SKIP;
     public static final ModConfigSpec.BooleanValue DEBUG_LOG;
     public static final ModConfigSpec.BooleanValue ENABLE_STRUCTURE_MUSIC;
@@ -21,6 +22,10 @@ public class Config {
         MAX_DELAY = builder
                 .comment("Maximum delay (in ticks)")
                 .defineInRange("maxDelay", 300, 0, 600);
+
+        FADE_DURATION = builder
+                .comment("")
+                .defineInRange("fadeDuration", 5, 5, 10);
 
         PRINT_ON_SKIP = builder
                 .comment("Print message when skipping")

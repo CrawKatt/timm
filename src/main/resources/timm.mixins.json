@@ -5,9 +5,11 @@
   "package": "com.github.charlyb01.timm.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "MinecraftMixin",
     "ClientLevelMixin",
+    "MinecraftMixin",
     "MusicManagerAccessor",
+    "MusicManagerMixin",
+    "SoundEngineMixin",
     "SoundManagerMixin"
   ],
   "injectors": {
