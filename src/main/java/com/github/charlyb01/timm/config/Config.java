@@ -8,6 +8,7 @@ public class Config {
     public static final ModConfigSpec.IntValue MAX_DELAY;
     public static final ModConfigSpec.BooleanValue PRINT_ON_SKIP;
     public static final ModConfigSpec.BooleanValue DEBUG_LOG;
+    public static final ModConfigSpec.BooleanValue ENABLE_STRUCTURE_MUSIC;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -28,6 +29,10 @@ public class Config {
         DEBUG_LOG = builder
                 .comment("Enable debug logging (no GUI entry)")
                 .define("debugLog", false);
+
+        ENABLE_STRUCTURE_MUSIC = builder
+                .comment("Enable structure songs playing")
+                .define("enableStructure", true);
 
         builder.pop();
         SPEC = builder.build();

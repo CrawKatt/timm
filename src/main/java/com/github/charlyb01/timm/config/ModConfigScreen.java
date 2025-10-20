@@ -38,6 +38,12 @@ public class ModConfigScreen {
                 .setSaveConsumer(Config.PRINT_ON_SKIP::set)
                 .build());
 
+        general.addEntry(entryBuilder
+                .startBooleanToggle(Component.literal("Enable structure songs playing"), Config.ENABLE_STRUCTURE_MUSIC.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(Config.ENABLE_STRUCTURE_MUSIC::set)
+                .build());
+
         return builder.build();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.charlyb01.timm.mixin;
 
 import com.github.charlyb01.timm.Timm;
+import com.github.charlyb01.timm.config.Config;
 import com.github.charlyb01.timm.music.StructurePlaylist;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
@@ -47,6 +48,7 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
+        if (!Config.ENABLE_STRUCTURE_MUSIC.get()) return;
         if (this.tickCount % 20 != this.timm$tickCheck) return; // una vez por segundo, distribuido por jugador
 
         StructureManager structureManager = this.serverLevel().structureManager();
