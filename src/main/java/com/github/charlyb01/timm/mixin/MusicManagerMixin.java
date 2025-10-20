@@ -9,6 +9,7 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.MusicManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +32,7 @@ public abstract class MusicManagerMixin {
     @Shadow
     public abstract void stopPlaying();
 
+    @Shadow @Final private RandomSource random;
     @Unique private ResourceLocation timm$lastBiomeEvent;
     @Unique private float timm$volume = 1.0F;
 
@@ -47,7 +49,9 @@ public abstract class MusicManagerMixin {
             if (this.timm$volume == 0.0F) {
                 this.stopPlaying();
                 this.timm$volume = 1.0F;
-                this.nextSongDelay = 10;
+                this.nextSongDelay = Config.RESET_DELAY_ON_BIOME_SWITCH.get()
+                    ? this.random.nextIntBetweenInclusive(Config.MAX_DELAY.get(), Config.MAX_DELAY.get())
+                    : 10;
                 this.currentMusic = null;
             }
         } else if (this.timm$volume < 1.0F) {
