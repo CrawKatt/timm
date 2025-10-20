@@ -33,11 +33,25 @@ public class ModConfigScreen {
                 .build());
 
         general.addEntry(entryBuilder
+                .startIntField(Component.literal("Fade Delay"), Config.FADE_DELAY.get())
+                .setDefaultValue(3)
+                .setMin(3)
+                .setMax(15)
+                .setSaveConsumer(Config.FADE_DURATION::set)
+                .build());
+
+        general.addEntry(entryBuilder
                 .startIntField(Component.literal("Fade Duration"), Config.FADE_DURATION.get())
                 .setDefaultValue(5)
                 .setMin(5)
                 .setMax(10)
                 .setSaveConsumer(Config.FADE_DURATION::set)
+                .build());
+
+        general.addEntry(entryBuilder
+                .startBooleanToggle(Component.literal("Reset Delay"), Config.RESET_DELAY_ON_BIOME_SWITCH.get())
+                .setDefaultValue(true)
+                .setSaveConsumer(Config.RESET_DELAY_ON_BIOME_SWITCH::set)
                 .build());
 
         general.addEntry(entryBuilder

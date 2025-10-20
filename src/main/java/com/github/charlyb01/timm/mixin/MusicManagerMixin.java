@@ -35,6 +35,7 @@ public abstract class MusicManagerMixin {
     @Shadow @Final private RandomSource random;
     @Unique private ResourceLocation timm$lastBiomeEvent;
     @Unique private float timm$volume = 1.0F;
+    @Unique private int switchDelay = 0;
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void fadeOutMusic(CallbackInfo ci) {
@@ -66,7 +67,7 @@ public abstract class MusicManagerMixin {
     }
 
     @Unique
-    private boolean timm$shouldFadeOut() {
+    private boolean timm$biomeSwitch() {
         Optional<ResourceKey<Biome>> biomeKey = this.minecraft.level.getBiome(this.minecraft.player.blockPosition()).unwrapKey();
         if (biomeKey.isEmpty()) {
             Timm.debugLog("Biome was not registered: likely a bug!");
@@ -80,5 +81,14 @@ public abstract class MusicManagerMixin {
         }
 
         return !eventsForCurrentBiome.contains(this.timm$lastBiomeEvent);
+    }
+
+    @Unique boolean timm$shouldFadeOut() {
+        if (this.timm$biomeSwitch()) {
+            return ++this.switchDelay >= Config.FADE_DELAY.get() * 20;
+        } else {
+            this.switchDelay = 0;
+            return false;
+        }
     }
 }
