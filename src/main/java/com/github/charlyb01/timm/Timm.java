@@ -6,6 +6,7 @@ import com.github.charlyb01.timm.config.ModConfigScreen;
 import com.github.charlyb01.timm.music.BiomePlaylist;
 import com.github.charlyb01.timm.music.Songs;
 import com.github.charlyb01.timm.music.StructurePlaylist;
+import com.github.charlyb01.timm.network.NetworkingRegistry;
 import com.github.charlyb01.timm.registry.SoundEventRegistry;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -45,6 +46,7 @@ public class Timm
     {
         NeoForge.EVENT_BUS.addListener(ClientModEvents::onClientCommands);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        modEventBus.addListener(NetworkingRegistry::register);
         SoundEventRegistry.register(modEventBus);
     }
 

@@ -1,18 +1,14 @@
 package com.github.charlyb01.timm.mixin;
 
 import com.github.charlyb01.timm.Timm;
-import com.github.charlyb01.timm.config.Config;
 import com.github.charlyb01.timm.music.StructurePlaylist;
+import com.github.charlyb01.timm.network.PlayPacket;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.StructureManager;
@@ -21,6 +17,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,7 +34,6 @@ import java.util.Set;
 public abstract class ServerPlayerMixin extends Player {
     @Shadow public abstract ServerLevel serverLevel();
 
-    @Shadow public ServerGamePacketListenerImpl connection;
     @Unique private ResourceLocation timm$currentSoundId;
     @Unique private final int timm$tickCheck;
 
@@ -48,7 +44,6 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (!Config.ENABLE_STRUCTURE_MUSIC.get()) return;
         if (this.tickCount % 20 != this.timm$tickCheck) return; // una vez por segundo, distribuido por jugador
 
         StructureManager structureManager = this.serverLevel().structureManager();
@@ -74,8 +69,7 @@ public abstract class ServerPlayerMixin extends Player {
                 if (soundId.equals(this.timm$currentSoundId)) break;
 
                 this.timm$currentSoundId = soundId;
-                this.connection.send(new ClientboundStopSoundPacket(null, SoundSource.MUSIC));
-                this.level().playSound(null, this.blockPosition(), SoundEvent.createVariableRangeEvent(soundId), SoundSource.MUSIC, 1.0f, 1.0f);
+                PacketDistributor.sendToPlayer((ServerPlayer) (Object)this, new PlayPacket(soundId));
 
                 break;
             }
