@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SoundManagerMixin implements VolumeSettingIMixin {
     @Shadow @Final private SoundEngine soundEngine;
 
-    @Inject(method = "play", at = @At("TAIL"))
+    @Inject(method = "play(Lnet/minecraft/client/resources/sounds/SoundInstance;)V", at = @At("TAIL"))
     private void saveMusicIdentifier(SoundInstance sound, CallbackInfo ci) {
         if (!sound.getSource().equals(SoundSource.MUSIC) || sound.getSound() == null) return;
         NowPlayingCmd.SONG_ID = sound.getSound().getLocation();

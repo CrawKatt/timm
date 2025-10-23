@@ -1,7 +1,6 @@
 package com.github.charlyb01.timm.music;
 
 import com.github.charlyb01.timm.Timm;
-import com.github.charlyb01.timm.config.Config;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import net.minecraft.ChatFormatting;

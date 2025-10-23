@@ -19,19 +19,19 @@ public class Config {
         builder.push("general");
 
         MIN_DELAY = builder
-                .comment("Minimum delay (in ticks)")
-                .defineInRange("minDelay", 300, 0, 600);
+                .comment("Minimum delay (in seconds)")
+                .defineInRange("minDelay", 120, 0, 600);
 
         MAX_DELAY = builder
-                .comment("Maximum delay (in ticks)")
+                .comment("Maximum delay (in seconds)")
                 .defineInRange("maxDelay", 300, 0, 600);
 
         FADE_DELAY = builder
-                .comment("Duration of music fade out")
+                .comment("Delay before starting fade out when changing biomes (in seconds)")
                 .defineInRange("fadeDelay", 3, 3, 15);
 
         FADE_DURATION = builder
-                .comment("Duration of music fade out")
+                .comment("Duration of music fade out (in seconds)")
                 .defineInRange("fadeDuration", 5, 5, 10);
 
         RESET_DELAY_ON_BIOME_SWITCH = builder

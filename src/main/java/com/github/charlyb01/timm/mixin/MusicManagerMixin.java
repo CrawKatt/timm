@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Mixin(MusicManager.class)
@@ -39,9 +38,6 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
     @Shadow
     public abstract void startPlaying(Music type);
-
-    @Shadow
-    public abstract void stopPlaying();
 
     @Unique private ResourceLocation timm$lastBiomeEvent;
     @Unique private ResourceLocation timm$structureEvent;
@@ -65,7 +61,6 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
             ((VolumeSettingIMixin) this.minecraft.getSoundManager()).timm$setVolume(this.currentMusic, this.timm$volume);
 
             if (this.timm$volume > 0.f) return;
-
             this.minecraft.getSoundManager().stop(this.currentMusic);
             this.timm$volume = 1.f;
             this.nextSongDelay = Config.RESET_DELAY_ON_BIOME_SWITCH.get()
@@ -75,7 +70,6 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
             if (this.timm$structureEvent == null) return;
             this.timm$playStructureMusic();
-
         } else if (this.timm$volume < 1.0F) {
             this.timm$volume = Math.min(1.0F, this.timm$volume + delta);
             ((VolumeSettingIMixin) this.minecraft.getSoundManager()).timm$setVolume(this.currentMusic, this.timm$volume);
@@ -100,7 +94,7 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
             return true;
         }
 
-        ArrayList<ResourceLocation> eventsForCurrentBiome = BiomePlaylist.EVENTS_BY_BIOME.get(biomeKey.get().location());
+        var eventsForCurrentBiome = BiomePlaylist.EVENTS_BY_BIOME.get(biomeKey.get().location());
         if (eventsForCurrentBiome == null) {
             Timm.debugLog("Current biome not registered in playlist: fade out to default");
             return true;
@@ -111,8 +105,13 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
     @Unique
     boolean timm$shouldFadeOut() {
-        if (this.timm$structureEvent != null && !this.timm$structureEvent.equals(this.timm$structureEventPlaying)) return true;
-        if (this.timm$structureEventPlaying != null && Config.STRUCTURE_FADE_OUT.get().equals(StructureFadeOut.NEVER)) return false;
+        if (this.timm$structureEvent != null && !this.timm$structureEvent.equals(this.timm$structureEventPlaying)) {
+            return true;
+        }
+
+        if (this.timm$structureEventPlaying != null && Config.STRUCTURE_FADE_OUT.get().equals(StructureFadeOut.NEVER)) {
+            return false;
+        }
 
         if (this.timm$biomeSwitch()) {
             return ++this.timm$switchDelay >= Config.FADE_DELAY.get() * 20;

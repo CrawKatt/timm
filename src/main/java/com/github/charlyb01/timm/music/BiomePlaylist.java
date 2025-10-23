@@ -33,6 +33,7 @@ public class BiomePlaylist {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(biomeId);
         if (musics == null || musics.isEmpty()) {
             CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
         }
 
         ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
@@ -71,7 +72,7 @@ public class BiomePlaylist {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(MENU_ID);
         if (musics == null || musics.isEmpty()) return null;
 
-        ResourceLocation soundEventId = musics.get(0);
+        ResourceLocation soundEventId = musics.getFirst();
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
         if (soundEvent == null) return null;
 

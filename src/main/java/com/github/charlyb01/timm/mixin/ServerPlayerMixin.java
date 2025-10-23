@@ -42,9 +42,9 @@ public abstract class ServerPlayerMixin extends Player {
         this.timm$tickCheck = this.uuid.hashCode() % 20;
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "doTick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
-        if (this.tickCount % 20 != this.timm$tickCheck) return; // una vez por segundo, distribuido por jugador
+        if (this.tickCount % 20 != this.timm$tickCheck) return;
 
         StructureManager structureManager = this.serverLevel().structureManager();
         BlockPos playerPos = this.blockPosition();
