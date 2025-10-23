@@ -1,12 +1,10 @@
 package com.github.charlyb01.timm.network;
 
 import com.github.charlyb01.timm.config.Config;
+import com.github.charlyb01.timm.imixin.MusicManagerIMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.MusicManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -30,15 +28,6 @@ public final class NetworkingRegistry {
         musicManager.stopPlaying();
 
         ResourceLocation soundId = packet.soundId();
-        SoundEvent event = SoundEvent.createVariableRangeEvent(soundId);
-        Level level = mc.level;
-        level.playSound(
-                mc.player,
-                mc.player.blockPosition(),
-                event,
-                SoundSource.MUSIC,
-                1.0F,
-                1.0F
-        );
+        ((MusicManagerIMixin) mc.getMusicManager()).timm$setStructureEventId(soundId);
     }
 }

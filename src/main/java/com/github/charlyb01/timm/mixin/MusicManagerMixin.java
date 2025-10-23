@@ -2,13 +2,19 @@ package com.github.charlyb01.timm.mixin;
 
 import com.github.charlyb01.timm.Timm;
 import com.github.charlyb01.timm.config.Config;
+import com.github.charlyb01.timm.imixin.MusicManagerIMixin;
 import com.github.charlyb01.timm.imixin.VolumeSettingIMixin;
 import com.github.charlyb01.timm.music.BiomePlaylist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.MusicManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.Music;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Final;
@@ -24,22 +30,31 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @Mixin(MusicManager.class)
-public abstract class MusicManagerMixin {
+public abstract class MusicManagerMixin implements MusicManagerIMixin {
     @Shadow @Final private Minecraft minecraft;
+    @Shadow @Final private RandomSource random;
     @Shadow private @Nullable SoundInstance currentMusic;
     @Shadow private int nextSongDelay;
 
     @Shadow
+    public abstract void startPlaying(Music type);
+
+    @Shadow
     public abstract void stopPlaying();
 
-    @Shadow @Final private RandomSource random;
     @Unique private ResourceLocation timm$lastBiomeEvent;
+    @Unique private ResourceLocation timm$structureEvent;
     @Unique private float timm$volume = 1.0F;
-    @Unique private int switchDelay = 0;
+    @Unique private int timm$switchDelay = 0;
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void fadeOutMusic(CallbackInfo ci) {
-        if (this.currentMusic == null || this.minecraft.level == null || this.minecraft.player == null) return;
+    private void onTick(CallbackInfo ci) {
+        if (this.minecraft.level == null || this.minecraft.player == null) return;
+
+        if (this.currentMusic == null) {
+            if (this.timm$structureEvent != null) this.timm$playStructureMusic();
+            return;
+        }
 
         float delta = 1.0F / (Config.FADE_DURATION.get() * 20);
 
@@ -47,14 +62,18 @@ public abstract class MusicManagerMixin {
             this.timm$volume = Math.max(0.0F, this.timm$volume - delta);
             ((VolumeSettingIMixin) this.minecraft.getSoundManager()).timm$setVolume(this.currentMusic, this.timm$volume);
 
-            if (this.timm$volume == 0.0F) {
-                this.stopPlaying();
-                this.timm$volume = 1.0F;
-                this.nextSongDelay = Config.RESET_DELAY_ON_BIOME_SWITCH.get()
-                    ? this.random.nextIntBetweenInclusive(Config.MAX_DELAY.get(), Config.MAX_DELAY.get())
-                    : 10;
-                this.currentMusic = null;
-            }
+            if (this.timm$volume > 0.f) return;
+
+            this.minecraft.getSoundManager().stop(this.currentMusic);
+            this.timm$volume = 1.f;
+            this.nextSongDelay = Config.RESET_DELAY_ON_BIOME_SWITCH.get()
+                ? this.random.nextIntBetweenInclusive(Config.MIN_DELAY.get(), Config.MAX_DELAY.get())
+                : 10;
+            this.currentMusic = null;
+
+            if (this.timm$structureEvent == null) return;
+            this.timm$playStructureMusic();
+
         } else if (this.timm$volume < 1.0F) {
             this.timm$volume = Math.min(1.0F, this.timm$volume + delta);
             ((VolumeSettingIMixin) this.minecraft.getSoundManager()).timm$setVolume(this.currentMusic, this.timm$volume);
@@ -83,12 +102,40 @@ public abstract class MusicManagerMixin {
         return !eventsForCurrentBiome.contains(this.timm$lastBiomeEvent);
     }
 
-    @Unique boolean timm$shouldFadeOut() {
+    @Unique
+    boolean timm$shouldFadeOut() {
+        if (this.timm$structureEvent != null) return true;
+
         if (this.timm$biomeSwitch()) {
-            return ++this.switchDelay >= Config.FADE_DELAY.get() * 20;
+            return ++this.timm$switchDelay >= Config.FADE_DELAY.get() * 20;
         } else {
-            this.switchDelay = 0;
+            this.timm$switchDelay = 0;
             return false;
         }
+    }
+
+    @Unique
+    private void timm$playStructureMusic() {
+        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(this.timm$structureEvent.getNamespace(), this.timm$structureEvent.getPath());
+
+        ResourceKey<SoundEvent> key = ResourceKey.create(Registries.SOUND_EVENT, rl);
+        Optional<Holder.Reference<SoundEvent>> optHolder = BuiltInRegistries.SOUND_EVENT.getHolder(key);
+
+        if (optHolder.isEmpty()) return;
+
+        Music music = new Music(
+                optHolder.get(),
+                Config.MIN_DELAY.get(),
+                Config.MAX_DELAY.get(),
+                false
+        );
+
+        this.startPlaying(music);
+        this.timm$structureEvent = null;
+    }
+
+    @Override
+    public void timm$setStructureEventId(ResourceLocation soundId) {
+        this.timm$structureEvent = soundId;
     }
 }
