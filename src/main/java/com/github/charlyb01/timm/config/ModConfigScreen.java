@@ -37,7 +37,7 @@ public class ModConfigScreen {
                 .setDefaultValue(3)
                 .setMin(3)
                 .setMax(15)
-                .setSaveConsumer(Config.FADE_DURATION::set)
+                .setSaveConsumer(Config.FADE_DELAY::set)
                 .build());
 
         general.addEntry(entryBuilder

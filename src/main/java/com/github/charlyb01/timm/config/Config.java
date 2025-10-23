@@ -28,7 +28,7 @@ public class Config {
 
         FADE_DELAY = builder
                 .comment("Duration of music fade out")
-                .defineInRange("fadeDuration", 3, 3, 15);
+                .defineInRange("fadeDelay", 3, 3, 15);
 
         FADE_DURATION = builder
                 .comment("Duration of music fade out")
