@@ -2,6 +2,7 @@ package com.github.charlyb01.timm.mixin;
 
 import com.github.charlyb01.timm.Timm;
 import com.github.charlyb01.timm.config.Config;
+import com.github.charlyb01.timm.config.StructureFadeOut;
 import com.github.charlyb01.timm.imixin.MusicManagerIMixin;
 import com.github.charlyb01.timm.imixin.VolumeSettingIMixin;
 import com.github.charlyb01.timm.music.BiomePlaylist;
@@ -44,6 +45,7 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
     @Unique private ResourceLocation timm$lastBiomeEvent;
     @Unique private ResourceLocation timm$structureEvent;
+    @Unique private ResourceLocation timm$structureEventPlaying;
     @Unique private float timm$volume = 1.0F;
     @Unique private int timm$switchDelay = 0;
 
@@ -80,9 +82,14 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
         }
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/sounds/MusicManager;startPlaying(Lnet/minecraft/sounds/Music;)V"))
+    @Inject(method = "startPlaying", at = @At("HEAD"))
     private void saveCurrentBiome(CallbackInfo ci) {
         this.timm$lastBiomeEvent = BiomePlaylist.CURRENT_BIOME_EVENT;
+    }
+
+    @Inject(method = "startPlaying", at = @At("HEAD"))
+    private void resetStructure(Music type, CallbackInfo ci) {
+        this.timm$structureEventPlaying = null;
     }
 
     @Unique
@@ -104,7 +111,8 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
     @Unique
     boolean timm$shouldFadeOut() {
-        if (this.timm$structureEvent != null) return true;
+        if (this.timm$structureEvent != null && !this.timm$structureEvent.equals(this.timm$structureEventPlaying)) return true;
+        if (this.timm$structureEventPlaying != null && Config.STRUCTURE_FADE_OUT.get().equals(StructureFadeOut.NEVER)) return false;
 
         if (this.timm$biomeSwitch()) {
             return ++this.timm$switchDelay >= Config.FADE_DELAY.get() * 20;
@@ -131,6 +139,7 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
         );
 
         this.startPlaying(music);
+        this.timm$structureEventPlaying = this.timm$structureEvent;
         this.timm$structureEvent = null;
     }
 

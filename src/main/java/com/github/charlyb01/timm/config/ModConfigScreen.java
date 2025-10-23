@@ -66,6 +66,16 @@ public class ModConfigScreen {
                 .setSaveConsumer(Config.ENABLE_STRUCTURE_MUSIC::set)
                 .build());
 
+        general.addEntry(entryBuilder
+                .startEnumSelector(
+                        Component.translatable("text.autoconfig.timm.option.general.structureFadeOut"),
+                        StructureFadeOut.class,
+                        Config.STRUCTURE_FADE_OUT.get()
+                )
+                .setDefaultValue(StructureFadeOut.NEVER)
+                .setSaveConsumer(Config.STRUCTURE_FADE_OUT::set)
+                .build());
+
         return builder.build();
     }
 }

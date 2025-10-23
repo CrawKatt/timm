@@ -12,6 +12,7 @@ public class Config {
     public static final ModConfigSpec.BooleanValue PRINT_ON_SKIP;
     public static final ModConfigSpec.BooleanValue DEBUG_LOG;
     public static final ModConfigSpec.BooleanValue ENABLE_STRUCTURE_MUSIC;
+    public static final ModConfigSpec.EnumValue<StructureFadeOut> STRUCTURE_FADE_OUT;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -48,6 +49,11 @@ public class Config {
         ENABLE_STRUCTURE_MUSIC = builder
                 .comment("Enable structure songs playing")
                 .define("enableStructure", true);
+
+        STRUCTURE_FADE_OUT = builder
+                .comment("Structure should fade out")
+                .translation("text.autoconfig.timm.option.general.structureFadeOut")
+                .defineEnum("structureFadeOut", StructureFadeOut.NEVER);
 
         builder.pop();
         SPEC = builder.build();
