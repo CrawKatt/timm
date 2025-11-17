@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class BiomePlaylist {
-    private static final ResourceLocation UNDEFINED_BIOME = Timm.id("undefined_biome");
+    public static final ResourceLocation UNDEFINED_BIOME = Timm.id("undefined_biome");
     public static ResourceLocation CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
     public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
     private static final ResourceLocation CREATIVE_ID = ResourceLocation.tryParse("creative");

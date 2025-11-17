@@ -88,6 +88,9 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
     @Unique
     private boolean timm$biomeSwitch() {
+        if (BiomePlaylist.UNDEFINED_BIOME.equals(this.timm$lastBiomeEvent)) {
+            return false;
+        }
         Optional<ResourceKey<Biome>> biomeKey = this.minecraft.level.getBiome(this.minecraft.player.blockPosition()).unwrapKey();
         if (biomeKey.isEmpty()) {
             Timm.debugLog("Biome was not registered: likely a bug!");
