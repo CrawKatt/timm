@@ -44,6 +44,7 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Inject(method = "doTick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
+        if (this.isCreative()) return;
         if (this.tickCount % 20 != this.timm$tickCheck) return;
 
         StructureManager structureManager = this.serverLevel().structureManager();
