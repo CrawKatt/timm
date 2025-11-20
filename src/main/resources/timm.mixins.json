@@ -6,9 +6,15 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "MinecraftMixin",
-    "MusicManagerMixin"
+    "MusicManagerMixin",
+    "MusicManagerMixin",
+    "SoundEngineMixin",
+    "SoundManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "ServerPlayerMixin"
+  ]
 }

@@ -5,6 +5,7 @@ import com.github.charlyb01.timm.config.Config;
 import com.github.charlyb01.timm.config.ModConfigScreen;
 import com.github.charlyb01.timm.music.BiomePlaylist;
 import com.github.charlyb01.timm.music.Songs;
+import com.github.charlyb01.timm.network.NetworkingRegistry;
 import com.github.charlyb01.timm.registry.SoundEventRegistry;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -12,12 +13,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
@@ -34,6 +37,10 @@ public class Timm
         return new ResourceLocation(MOD_ID, path);
     }
 
+    public static void debugLog(String debugString) {
+        LOGGER.info(debugString);
+    }
+
     public Timm()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -42,7 +49,12 @@ public class Timm
         MinecraftForge.EVENT_BUS.addListener(ClientModEvents::onClientCommands);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        modEventBus.addListener(this::commonSetup);
         SoundEventRegistry.register(modEventBus);
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(NetworkingRegistry::register);
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

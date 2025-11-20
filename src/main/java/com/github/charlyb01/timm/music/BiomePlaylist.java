@@ -23,18 +23,26 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class BiomePlaylist {
+    public static final ResourceLocation UNDEFINED_BIOME = Timm.id("undefined_biome");
+    public static ResourceLocation CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
     public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
-    private static final ResourceLocation CREATIVE_ID = new ResourceLocation("creative");
-    private static final ResourceLocation MENU_ID = new ResourceLocation("menu");
+    private static final ResourceLocation CREATIVE_ID = ResourceLocation.tryParse("creative");
+    private static final ResourceLocation MENU_ID = ResourceLocation.tryParse("menu");
 
     public static Music getMusicSound(ResourceLocation biomeId, RandomSource random) {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(biomeId);
-        if (musics == null || musics.isEmpty()) return null;
+        if (musics == null || musics.isEmpty()) {
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
+        }
 
         ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
-        if (soundEvent == null) return null;
-
+        if (soundEvent == null) {
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
+        }
+        CURRENT_BIOME_EVENT = soundEventId;
         return new Music(
                 soundEvent,
                 Config.MIN_DELAY.get() * 20,
@@ -117,9 +125,7 @@ public class BiomePlaylist {
             return filePath;
         }
 
-        if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Player biome_playlist.json not found, using default one");
-        }
+        Timm.debugLog("Player biome playlist.json not found, using default one");
 
         Optional<? extends ModContainer> container = ModList.get().getModContainerById(Timm.MOD_ID);
         if (container.isEmpty()) {
