@@ -6,29 +6,24 @@ import com.github.charlyb01.timm.imixin.MusicManagerIMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.MusicManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.ChannelBuilder;
+import net.minecraftforge.network.SimpleChannel;
 
 public final class NetworkingRegistry {
-    private static final String PROTOCOL = "1";
 
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(Timm.MOD_ID, "main"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals
-    );
+    public static final ResourceLocation CHANNEL_NAME = Timm.id("main");
 
-    private static int id = 0;
+    public static final SimpleChannel CHANNEL = ChannelBuilder
+            .named(CHANNEL_NAME)
+            .networkProtocolVersion(1)
+            .clientAcceptedVersions((v, i) -> true)
+            .serverAcceptedVersions((v, i) -> true)
+            .simpleChannel();
 
     public static void register() {
-        CHANNEL.registerMessage(
-                id++,
-                PlayPacket.class,
-                PlayPacket::write,
-                PlayPacket::new,
-                PlayPacket::handle
-        );
+        CHANNEL.messageBuilder(PlayPacket.class)
+                .consumerMainThread(PlayPacket::handle)
+                .add();
     }
 
     public static void handlePlayOnMain(final PlayPacket packet) {

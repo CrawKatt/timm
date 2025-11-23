@@ -72,8 +72,8 @@ public abstract class ServerPlayerMixin extends Player {
 
                 this.timm$currentSoundId = soundId;
                 NetworkingRegistry.CHANNEL.send(
-                        PacketDistributor.PLAYER.with(() -> (ServerPlayer) (Object)this),
-                        new PlayPacket(soundId)
+                        new PlayPacket(soundId),
+                        PacketDistributor.PLAYER.with((ServerPlayer)(Object)this)
                 );
 
                 break;
