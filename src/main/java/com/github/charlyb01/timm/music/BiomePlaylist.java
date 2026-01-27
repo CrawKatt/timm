@@ -6,15 +6,17 @@ import com.github.charlyb01.timm.registry.SoundEventRegistry;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.Music;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,17 +25,35 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class BiomePlaylist {
-    public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
-    private static final ResourceLocation CREATIVE_ID = new ResourceLocation("creative");
-    private static final ResourceLocation MENU_ID = new ResourceLocation("menu");
+    // Missing Fields Restored
+    public static final Identifier UNDEFINED_BIOME = Timm.id("undefined_biome");
+    public static Identifier CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
 
-    public static Music getMusicSound(ResourceLocation biomeId, RandomSource random) {
-        ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(biomeId);
-        if (musics == null || musics.isEmpty()) return null;
+    public static final HashMap<Identifier, ArrayList<Identifier>> EVENTS_BY_BIOME = new HashMap<>();
 
-        ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
+    private static final Identifier CREATIVE_ID = Identifier.tryParse("creative");
+    private static final Identifier MENU_ID = Identifier.tryParse("menu");
+    private static final Identifier END_ID = Identifier.tryParse("end");
+
+    public static Music getMusicSound(Identifier biomeId, RandomSource random) {
+        ArrayList<Identifier> musics = EVENTS_BY_BIOME.get(biomeId);
+        if (musics == null || musics.isEmpty()) {
+            // Update state: No music found for this biome
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
+        }
+
+        Identifier soundEventId = musics.get(random.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
-        if (soundEvent == null) return null;
+
+        if (soundEvent == null) {
+            // Update state: Sound event not found in registry
+            CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
+            return null;
+        }
+
+        // Update state: Success
+        CURRENT_BIOME_EVENT = soundEventId;
 
         return new Music(
                 soundEvent,
@@ -44,10 +64,10 @@ public class BiomePlaylist {
     }
 
     public static Music getCreativeMusic(RandomSource random) {
-        ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(CREATIVE_ID);
+        ArrayList<Identifier> musics = EVENTS_BY_BIOME.get(CREATIVE_ID);
         if (musics == null || musics.isEmpty()) return null;
 
-        ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
+        Identifier soundEventId = musics.get(random.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
         if (soundEvent == null) return null;
 
@@ -59,11 +79,27 @@ public class BiomePlaylist {
         );
     }
 
-    public static Music getMenuMusic() {
-        ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(MENU_ID);
+    public static Music getEndMusic(RandomSource random) {
+        ArrayList<Identifier> musics = EVENTS_BY_BIOME.get(END_ID);
         if (musics == null || musics.isEmpty()) return null;
 
-        ResourceLocation soundEventId = musics.get(0);
+        Identifier soundEventId = musics.get(random.nextInt(musics.size()));
+        Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
+        if (soundEvent == null) return null;
+
+        return new Music(
+                soundEvent,
+                Config.MIN_DELAY.get() * 20,
+                Config.MAX_DELAY.get() * 20,
+                false
+        );
+    }
+
+    public static Music getMenuMusic(RandomSource random) {
+        ArrayList<Identifier> musics = EVENTS_BY_BIOME.get(MENU_ID);
+        if (musics == null || musics.isEmpty()) return null;
+
+        Identifier soundEventId = musics.get(random.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
         if (soundEvent == null) return null;
 
@@ -73,11 +109,11 @@ public class BiomePlaylist {
     public static void init() {
         Timm.LOGGER.info("Initializing biome playlists");
 
-        Path path = getPath();
-        if (path == null) return;
+        InputStream stream = getInputStream();
+        if (stream == null) return;
 
         try {
-            JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(path)));
+            JsonReader jsonReader = new JsonReader(new InputStreamReader(stream));
             while (jsonReader.hasNext()) {
                 JsonToken jsonToken = jsonReader.peek();
                 if (jsonToken == JsonToken.BEGIN_OBJECT) {
@@ -86,14 +122,14 @@ public class BiomePlaylist {
                     jsonReader.endObject();
                 } else {
                     String biomeName = jsonReader.nextName();
-                    ResourceLocation biomeId = new ResourceLocation(biomeName);
-                    ArrayList<ResourceLocation> musics = new ArrayList<>();
+                    Identifier biomeId = Identifier.tryParse(biomeName);
+                    ArrayList<Identifier> musics = new ArrayList<>();
 
                     if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
                         jsonReader.beginArray();
                         while (jsonReader.hasNext()) {
                             String musicId = jsonReader.nextString();
-                            musics.add(new ResourceLocation(musicId));
+                            musics.add(Identifier.tryParse(musicId));
                         }
                         jsonReader.endArray();
                     }
@@ -101,20 +137,26 @@ public class BiomePlaylist {
                     EVENTS_BY_BIOME.put(biomeId, musics);
                 }
             }
+            jsonReader.close();
             Timm.LOGGER.info("Biome playlists successfully initialized");
         } catch (IOException why) {
             Timm.LOGGER.error("Error reading biome playlist file: {}", why.getMessage());
         }
     }
 
-    private static Path getPath() {
+    private static InputStream getInputStream() {
         Path loader = FMLPaths.CONFIGDIR.get();
         Path filePath = loader
                 .resolve(Timm.MOD_ID)
                 .resolve("biome_playlists.json");
 
         if (Files.exists(filePath)) {
-            return filePath;
+            try {
+                return Files.newInputStream(filePath);
+            } catch (IOException e) {
+                Timm.LOGGER.error("Error opening external biome_playlists.json", e);
+                return null;
+            }
         }
 
         if (Config.DEBUG_LOG.get()) {
@@ -128,19 +170,22 @@ public class BiomePlaylist {
         }
 
         ModContainer mod = container.get();
-        Optional<Path> path = Optional.of(mod
-                .getModInfo()
-                .getOwningFile()
-                .getFile()
-                .findResource("assets/timm/custom/biome_playlists.json")
-        );
+        IModInfo modInfo = mod.getModInfo();
 
-        filePath = path.get();
-        if (!Files.exists(filePath)) {
-            Timm.LOGGER.error("Default biome_playlist.json does not exist");
+        try {
+            InputStream internalStream = modInfo.getOwningFile()
+                    .getFile()
+                    .getContents()
+                    .openFile("assets/timm/custom/biome_playlists.json");
+
+            if (internalStream == null) {
+                Timm.LOGGER.error("Default biome_playlists.json does not exist in JarContents");
+                return null;
+            }
+            return internalStream;
+        } catch (IOException e) {
+            Timm.LOGGER.error("Failed to read internal biome_playlists.json", e);
             return null;
         }
-
-        return filePath;
     }
 }

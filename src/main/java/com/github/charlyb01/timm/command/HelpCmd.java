@@ -23,7 +23,10 @@ public class HelpCmd {
         Component stop = Component.literal("\n/timmstop /stp ")
                 .append(Component.translatable("cmd.help.stop"));
         Component help = Component.translatable("cmd.help")
-                .append(cfg).append(np).append(skip).append(stop);
+                .append(cfg)
+                .append(np)
+                .append(skip)
+                .append(stop);
 
         context.getSource().sendSystemMessage(help);
         return Command.SINGLE_SUCCESS;

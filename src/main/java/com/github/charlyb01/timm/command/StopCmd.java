@@ -11,8 +11,11 @@ import net.minecraft.network.chat.Component;
 public class StopCmd {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(net.minecraft.commands.Commands.literal("timmstop")
+                .requires(commandSourceStack -> true)
                 .executes(StopCmd::stop));
+
         dispatcher.register(net.minecraft.commands.Commands.literal("stp")
+                .requires(commandSourceStack -> true)
                 .executes(StopCmd::stop));
     }
 

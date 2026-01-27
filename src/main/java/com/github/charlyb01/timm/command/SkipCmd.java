@@ -10,8 +10,11 @@ import net.minecraft.commands.CommandSourceStack;
 public class SkipCmd {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(net.minecraft.commands.Commands.literal("skip")
+                .requires(commandSourceStack -> true)
                 .executes(SkipCmd::skip));
+
         dispatcher.register(net.minecraft.commands.Commands.literal("next")
+                .requires(commandSourceStack -> true)
                 .executes(SkipCmd::skip));
     }
 

@@ -4,11 +4,6 @@ import com.github.charlyb01.timm.Timm;
 import com.github.charlyb01.timm.config.Config;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -18,29 +13,24 @@ import net.neoforged.neoforgespi.language.IModInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-public class Songs {
-    private static final HashMap<Identifier, MutableComponent> SONG_TEXT_BY_SONG_ID = new HashMap<>();
-
-    public static MutableComponent getSongText(Identifier songId) {
-        if (songId == null) return null;
-        return SONG_TEXT_BY_SONG_ID.getOrDefault(songId, Component.literal(songId.toString()));
-    }
+public class StructurePlaylist {
+    public static HashMap<String, Integer> DISTANCE_FROM_STRUCTURE = new HashMap<>();
+    public static HashMap<String, Identifier> EVENT_ID_FROM_STRUCTURE = new HashMap<>();
 
     public static void init() {
-        Timm.LOGGER.info("Initializing songs");
+        Timm.LOGGER.info("Initializing structure playlists");
 
         InputStream stream = getInputStream();
         if (stream == null) return;
 
         try {
             JsonReader jsonReader = new JsonReader(new InputStreamReader(stream));
-
             while (jsonReader.hasNext()) {
                 JsonToken jsonToken = jsonReader.peek();
                 if (jsonToken == JsonToken.BEGIN_OBJECT) {
@@ -48,63 +38,61 @@ public class Songs {
                 } else if (jsonToken == JsonToken.END_OBJECT) {
                     jsonReader.endObject();
                 } else {
-                    String song = jsonReader.nextName();
-                    Identifier songId = Identifier.tryParse(song);
-                    String songName = null;
-                    String songUrl = null;
+                    String structure = jsonReader.nextName();
+                    Identifier structureId = Timm.id(structure);
+                    int distance = 0;
+                    ArrayList<String> structures = new ArrayList<>();
 
                     if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
                         jsonReader.beginObject();
                         while (jsonReader.hasNext()) {
                             String name = jsonReader.nextName();
-                            if (name.equals("name")) {
-                                songName = jsonReader.nextString();
-                            } else if (name.equals("link")) {
-                                songUrl = jsonReader.nextString();
+                            if (name.equals("distance")) {
+                                distance = jsonReader.nextInt();
+                            } else if (name.equals("structures") && jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+                                jsonReader.beginArray();
+                                while (jsonReader.hasNext()) {
+                                    String musicId = jsonReader.nextString();
+                                    structures.add(musicId);
+                                }
+                                jsonReader.endArray();
+                            } else {
+                                jsonReader.skipValue();
                             }
                         }
                         jsonReader.endObject();
                     }
 
-                    SONG_TEXT_BY_SONG_ID.put(songId, makeSongText(songId, songName, songUrl));
+                    for (String structureName : structures) {
+                        DISTANCE_FROM_STRUCTURE.put(structureName, distance);
+                        EVENT_ID_FROM_STRUCTURE.put(structureName, structureId);
+                    }
                 }
             }
             jsonReader.close();
-            Timm.LOGGER.info("Songs successfully initialized");
-        } catch (IOException why) {
-            Timm.LOGGER.error("Error reading songs file: {}", why.getMessage());
+            Timm.LOGGER.info("Structure playlists successfully initialized");
+        } catch (IOException e) {
+            Timm.LOGGER.error("Error reading structure playlist file: {}", e.getMessage());
         }
-    }
-
-    private static MutableComponent makeSongText(Identifier identifier, String name, String url) {
-        MutableComponent song = Component.literal(name == null
-                ? identifier.toString()
-                : name);
-        if (url != null) {
-            song.setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
-                    .withUnderlined(true)
-                    .withClickEvent(new ClickEvent.OpenUrl(URI.create(url))));
-        }
-        return song;
     }
 
     private static InputStream getInputStream() {
         Path loader = FMLPaths.CONFIGDIR.get();
         Path filePath = loader
                 .resolve(Timm.MOD_ID)
-                .resolve("songs.json");
+                .resolve("structure_playlists.json");
 
         if (Files.exists(filePath)) {
             try {
                 return Files.newInputStream(filePath);
             } catch (IOException e) {
-                Timm.LOGGER.error("Error opening external songs.json", e);
+                Timm.LOGGER.error("Error opening external structure_playlists.json", e);
                 return null;
             }
         }
 
         if (Config.DEBUG_LOG.get()) {
-            Timm.LOGGER.info("Player songs.json not found using default one");
+            Timm.LOGGER.info("Player structure_playlists.json not found, using default one");
         }
 
         Optional<? extends ModContainer> container = ModList.get().getModContainerById(Timm.MOD_ID);
@@ -120,17 +108,15 @@ public class Songs {
             InputStream internalStream = modInfo.getOwningFile()
                     .getFile()
                     .getContents()
-                    .openFile("assets/timm/custom/songs.json");
+                    .openFile("assets/timm/custom/structure_playlists.json");
 
             if (internalStream == null) {
-                Timm.LOGGER.error("Default songs.json does not exist in JarContents");
+                Timm.LOGGER.error("Default structure_playlists.json does not exist in JarContents");
                 return null;
             }
-
             return internalStream;
-
         } catch (IOException e) {
-            Timm.LOGGER.error("Failed to read internal songs.json from JarContents", e);
+            Timm.LOGGER.error("Failed to read internal structure_playlists.json", e);
             return null;
         }
     }

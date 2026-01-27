@@ -7,10 +7,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class NowPlayingCmd {
-    public static ResourceLocation SONG_ID;
+    public static Identifier SONG_ID;
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(net.minecraft.commands.Commands.literal("nowplaying")

@@ -10,6 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 public class OpenConfigCmd {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(net.minecraft.commands.Commands.literal("cfg")
+                .requires(commandSourceStack -> true)
                 .executes(OpenConfigCmd::configScreen));
     }
 
