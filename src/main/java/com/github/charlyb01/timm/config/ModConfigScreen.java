@@ -18,7 +18,7 @@ public class ModConfigScreen {
 
         general.addEntry(entryBuilder
                 .startIntField(Component.literal("Minimum Delay"), Config.MIN_DELAY.get())
-                .setDefaultValue(300)
+                .setDefaultValue(120)
                 .setMin(0)
                 .setMax(600)
                 .setSaveConsumer(Config.MIN_DELAY::set)
@@ -49,8 +49,16 @@ public class ModConfigScreen {
                 .build());
 
         general.addEntry(entryBuilder
+                .startIntField(Component.literal("Minimum Play Time Before Biome Switch"), Config.MIN_PLAY_TIME_BEFORE_BIOME_SWITCH.get())
+                .setDefaultValue(30)
+                .setMin(0)
+                .setMax(300)
+                .setSaveConsumer(Config.MIN_PLAY_TIME_BEFORE_BIOME_SWITCH::set)
+                .build());
+
+        general.addEntry(entryBuilder
                 .startBooleanToggle(Component.literal("Reset Delay"), Config.RESET_DELAY_ON_BIOME_SWITCH.get())
-                .setDefaultValue(true)
+                .setDefaultValue(false)
                 .setSaveConsumer(Config.RESET_DELAY_ON_BIOME_SWITCH::set)
                 .build());
 

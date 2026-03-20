@@ -18,14 +18,17 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class StructurePlaylist {
-    public static HashMap<String, Integer> DISTANCE_FROM_STRUCTURE = new HashMap<>();
-    public static HashMap<String, ResourceLocation> EVENT_ID_FROM_STRUCTURE = new HashMap<>();
+    public static final HashMap<String, Integer> DISTANCE_FROM_STRUCTURE = new HashMap<>();
+    public static final HashMap<String, ResourceLocation> EVENT_ID_FROM_STRUCTURE = new HashMap<>();
 
     public static void init() {
         Timm.LOGGER.info("Initializing structure playlists");
 
         Path path = getPath();
         if (path == null) return;
+
+        DISTANCE_FROM_STRUCTURE.clear();
+        EVENT_ID_FROM_STRUCTURE.clear();
 
         try {
             JsonReader jsonReader = new JsonReader(new InputStreamReader(Files.newInputStream(path)));
@@ -69,6 +72,16 @@ public class StructurePlaylist {
         } catch (IOException e) {
             Timm.LOGGER.error("Error reading structure playlist file: {}", e.getMessage());
         }
+    }
+
+    public static Integer getDistance(ResourceLocation structureId) {
+        Integer distance = DISTANCE_FROM_STRUCTURE.get(structureId.toString());
+        return distance != null ? distance : DISTANCE_FROM_STRUCTURE.get(structureId.getPath());
+    }
+
+    public static ResourceLocation getEventId(ResourceLocation structureId) {
+        ResourceLocation eventId = EVENT_ID_FROM_STRUCTURE.get(structureId.toString());
+        return eventId != null ? eventId : EVENT_ID_FROM_STRUCTURE.get(structureId.getPath());
     }
 
     private static Path getPath() {

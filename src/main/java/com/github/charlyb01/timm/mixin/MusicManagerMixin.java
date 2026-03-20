@@ -44,15 +44,20 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
     @Unique private ResourceLocation timm$structureEventPlaying;
     @Unique private float timm$volume = 1.0F;
     @Unique private int timm$switchDelay = 0;
+    @Unique private int timm$currentTrackTicks = 0;
+    @Unique private @Nullable ResourceLocation timm$pendingBiomeSwitchTarget;
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         if (this.minecraft.level == null || this.minecraft.player == null) return;
 
         if (this.currentMusic == null) {
+            this.timm$currentTrackTicks = 0;
             if (this.timm$structureEvent != null) this.timm$playStructureMusic();
             return;
         }
+
+        this.timm$currentTrackTicks++;
 
         float delta = 1.0F / (Config.FADE_DURATION.get() * 20);
 
@@ -64,9 +69,11 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
             this.minecraft.getSoundManager().stop(this.currentMusic);
             this.timm$volume = 1.f;
             this.nextSongDelay = Config.RESET_DELAY_ON_BIOME_SWITCH.get()
-                ? this.random.nextIntBetweenInclusive(Config.MIN_DELAY.get(), Config.MAX_DELAY.get())
+                ? this.random.nextIntBetweenInclusive(Config.MIN_DELAY.get(), Config.MAX_DELAY.get()) * 20
                 : 10;
             this.currentMusic = null;
+            this.timm$currentTrackTicks = 0;
+            this.timm$resetBiomeSwitchState();
 
             if (this.timm$structureEvent == null) return;
             this.timm$playStructureMusic();
@@ -79,6 +86,9 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
     @Inject(method = "startPlaying", at = @At("HEAD"))
     private void saveCurrentBiome(CallbackInfo ci) {
         this.timm$lastBiomeEvent = BiomePlaylist.CURRENT_BIOME_EVENT;
+        this.timm$currentTrackTicks = 0;
+        this.timm$resetBiomeSwitchState();
+        this.timm$volume = 1.0F;
     }
 
     @Inject(method = "startPlaying", at = @At("HEAD"))
@@ -87,23 +97,30 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
     }
 
     @Unique
-    private boolean timm$biomeSwitch() {
+    private @Nullable ResourceLocation timm$getBiomeSwitchTarget() {
         if (BiomePlaylist.UNDEFINED_BIOME.equals(this.timm$lastBiomeEvent)) {
-            return false;
+            return null;
         }
         Optional<ResourceKey<Biome>> biomeKey = this.minecraft.level.getBiome(this.minecraft.player.blockPosition()).unwrapKey();
         if (biomeKey.isEmpty()) {
             Timm.debugLog("Biome was not registered: likely a bug!");
-            return true;
+            return BiomePlaylist.UNDEFINED_BIOME;
         }
 
-        var eventsForCurrentBiome = BiomePlaylist.EVENTS_BY_BIOME.get(biomeKey.get().location());
+        ResourceLocation biomeId = biomeKey.get().location();
+        var eventsForCurrentBiome = BiomePlaylist.EVENTS_BY_BIOME.get(biomeId);
         if (eventsForCurrentBiome == null) {
             Timm.debugLog("Current biome not registered in playlist: fade out to default");
-            return true;
+            return biomeId;
         }
 
-        return !eventsForCurrentBiome.contains(this.timm$lastBiomeEvent);
+        return eventsForCurrentBiome.contains(this.timm$lastBiomeEvent) ? null : biomeId;
+    }
+
+    @Unique
+    private void timm$resetBiomeSwitchState() {
+        this.timm$pendingBiomeSwitchTarget = null;
+        this.timm$switchDelay = 0;
     }
 
     @Unique
@@ -116,12 +133,24 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
             return false;
         }
 
-        if (this.timm$biomeSwitch()) {
-            return ++this.timm$switchDelay >= Config.FADE_DELAY.get() * 20;
-        } else {
-            this.timm$switchDelay = 0;
+        ResourceLocation biomeSwitchTarget = this.timm$getBiomeSwitchTarget();
+        if (biomeSwitchTarget == null) {
+            this.timm$resetBiomeSwitchState();
             return false;
         }
+
+        if (biomeSwitchTarget.equals(this.timm$pendingBiomeSwitchTarget)) {
+            this.timm$switchDelay++;
+        } else {
+            this.timm$pendingBiomeSwitchTarget = biomeSwitchTarget;
+            this.timm$switchDelay = 1;
+        }
+
+        if (this.timm$currentTrackTicks < Config.MIN_PLAY_TIME_BEFORE_BIOME_SWITCH.get() * 20) {
+            return false;
+        }
+
+        return this.timm$switchDelay >= Config.FADE_DELAY.get() * 20;
     }
 
     @Unique
@@ -135,8 +164,8 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
 
         Music music = new Music(
                 optHolder.get(),
-                Config.MIN_DELAY.get(),
-                Config.MAX_DELAY.get(),
+                Config.MIN_DELAY.get() * 20,
+                Config.MAX_DELAY.get() * 20,
                 false
         );
 
@@ -148,5 +177,12 @@ public abstract class MusicManagerMixin implements MusicManagerIMixin {
     @Override
     public void timm$setStructureEventId(ResourceLocation soundId) {
         this.timm$structureEvent = soundId;
+    }
+
+    @Override
+    public void timm$clearStructureState() {
+        this.timm$structureEvent = null;
+        this.timm$structureEventPlaying = null;
+        this.timm$resetBiomeSwitchState();
     }
 }

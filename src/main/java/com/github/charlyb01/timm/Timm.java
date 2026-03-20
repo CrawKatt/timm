@@ -19,6 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 //import net.neoforged.neoforge.client.ConfigScreenHandler;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -39,15 +40,22 @@ public class Timm
     }
 
     public static void debugLog(String debugString) {
-        LOGGER.info(debugString);
+        if (Config.DEBUG_LOG.get()) {
+            LOGGER.info(debugString);
+        }
     }
 
     public Timm(IEventBus modEventBus, ModContainer modContainer)
     {
         NeoForge.EVENT_BUS.addListener(ClientModEvents::onClientCommands);
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        modEventBus.addListener(this::onCommonSetup);
         modEventBus.addListener(NetworkingRegistry::register);
         SoundEventRegistry.register(modEventBus);
+    }
+
+    private void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(StructurePlaylist::init);
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -65,7 +73,6 @@ public class Timm
             event.enqueueWork(() -> {
                 BiomePlaylist.init();
                 Songs.init();
-                StructurePlaylist.init();
             });
         }
 
