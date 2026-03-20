@@ -40,8 +40,16 @@ public class Timm
     }
 
     public static void debugLog(String debugString) {
-        if (Config.DEBUG_LOG.get()) {
+        if (timm$isDebugLoggingEnabled()) {
             LOGGER.info(debugString);
+        }
+    }
+
+    private static boolean timm$isDebugLoggingEnabled() {
+        try {
+            return Config.DEBUG_LOG.get();
+        } catch (IllegalStateException ignored) {
+            return false;
         }
     }
 
