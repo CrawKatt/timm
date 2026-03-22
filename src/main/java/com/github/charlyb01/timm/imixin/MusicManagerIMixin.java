@@ -4,4 +4,5 @@ import net.minecraft.resources.ResourceLocation;
 
 public interface MusicManagerIMixin {
     void timm$setStructureEventId(ResourceLocation soundId);
+    void timm$clearStructureState();
 }

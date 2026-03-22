@@ -26,7 +26,9 @@ public class BiomePlaylist {
     public static final ResourceLocation UNDEFINED_BIOME = Timm.id("undefined_biome");
     public static ResourceLocation CURRENT_BIOME_EVENT = UNDEFINED_BIOME;
     public static final HashMap<ResourceLocation, ArrayList<ResourceLocation>> EVENTS_BY_BIOME = new HashMap<>();
+    private static final RandomSource MENU_RANDOM = RandomSource.create();
     private static final ResourceLocation CREATIVE_ID = ResourceLocation.tryParse("creative");
+    private static final ResourceLocation END_ID = ResourceLocation.tryParse("end");
     private static final ResourceLocation MENU_ID = ResourceLocation.tryParse("menu");
 
     public static Music getMusicSound(ResourceLocation biomeId, RandomSource random) {
@@ -68,11 +70,27 @@ public class BiomePlaylist {
         );
     }
 
+    public static Music getEndMusic(RandomSource random) {
+        ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(END_ID);
+        if (musics == null || musics.isEmpty()) return null;
+
+        ResourceLocation soundEventId = musics.get(random.nextInt(musics.size()));
+        Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
+        if (soundEvent == null) return null;
+
+        return new Music(
+                soundEvent,
+                Config.MIN_DELAY.get() * 20,
+                Config.MAX_DELAY.get() * 20,
+                false
+        );
+    }
+
     public static Music getMenuMusic() {
         ArrayList<ResourceLocation> musics = EVENTS_BY_BIOME.get(MENU_ID);
         if (musics == null || musics.isEmpty()) return null;
 
-        ResourceLocation soundEventId = musics.getFirst();
+        ResourceLocation soundEventId = musics.get(MENU_RANDOM.nextInt(musics.size()));
         Holder<SoundEvent> soundEvent = SoundEventRegistry.SOUNDEVENT_BY_ID.get(soundEventId);
         if (soundEvent == null) return null;
 

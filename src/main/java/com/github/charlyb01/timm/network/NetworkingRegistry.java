@@ -17,10 +17,16 @@ public final class NetworkingRegistry {
                 PlayPacket.STREAM_CODEC,
                 ((payload, context) -> handlePlayOnMain(payload))
         );
+
+        registrar.playToClient(
+                ClearStructurePacket.TYPE,
+                ClearStructurePacket.STREAM_CODEC,
+                ((payload, context) -> handleClearStructureOnMain())
+        );
     }
 
     private static void handlePlayOnMain(final PlayPacket packet) {
-        if (Config.ENABLE_STRUCTURE_MUSIC.get()) return;
+        if (!Config.ENABLE_STRUCTURE_MUSIC.get()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
 
@@ -29,5 +35,12 @@ public final class NetworkingRegistry {
 
         ResourceLocation soundId = packet.soundId();
         ((MusicManagerIMixin) mc.getMusicManager()).timm$setStructureEventId(soundId);
+    }
+
+    private static void handleClearStructureOnMain() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null) return;
+
+        ((MusicManagerIMixin) mc.getMusicManager()).timm$clearStructureState();
     }
 }

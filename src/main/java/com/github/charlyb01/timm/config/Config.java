@@ -8,6 +8,7 @@ public class Config {
     public static final ModConfigSpec.IntValue MAX_DELAY;
     public static final ModConfigSpec.IntValue FADE_DELAY;
     public static final ModConfigSpec.IntValue FADE_DURATION;
+    public static final ModConfigSpec.IntValue MIN_PLAY_TIME_BEFORE_BIOME_SWITCH;
     public static final ModConfigSpec.BooleanValue RESET_DELAY_ON_BIOME_SWITCH;
     public static final ModConfigSpec.BooleanValue PRINT_ON_SKIP;
     public static final ModConfigSpec.BooleanValue DEBUG_LOG;
@@ -33,6 +34,10 @@ public class Config {
         FADE_DURATION = builder
                 .comment("Duration of music fade out (in seconds)")
                 .defineInRange("fadeDuration", 5, 5, 10);
+
+        MIN_PLAY_TIME_BEFORE_BIOME_SWITCH = builder
+                .comment("Minimum track play time before a biome change may fade it out (in seconds)")
+                .defineInRange("minPlayTimeBeforeBiomeSwitch", 30, 0, 300);
 
         RESET_DELAY_ON_BIOME_SWITCH = builder
                 .comment("Reset delay on biome switch")

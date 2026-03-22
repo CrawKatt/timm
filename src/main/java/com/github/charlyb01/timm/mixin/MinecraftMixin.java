@@ -7,6 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.Music;
 import net.minecraft.world.level.biome.Biome;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,7 +21,7 @@ public class MinecraftMixin {
     @Shadow
     public LocalPlayer player;
 
-    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;MENU:Lnet/minecraft/sounds/Music;"), cancellable = true)
+    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;MENU:Lnet/minecraft/sounds/Music;", opcode = Opcodes.GETSTATIC), cancellable = true)
     private void updateMenuMusic(CallbackInfoReturnable<Music> cir) {
         Music music = BiomePlaylist.getMenuMusic();
         if (music != null) {
@@ -28,21 +29,17 @@ public class MinecraftMixin {
         }
     }
 
-    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;END:Lnet/minecraft/sounds/Music;"), cancellable = true)
+    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;END:Lnet/minecraft/sounds/Music;", opcode = Opcodes.GETSTATIC), cancellable = true)
     private void updateEndMusic(CallbackInfoReturnable<Music> cir) {
         if (this.player == null) return;
 
-        Holder<Biome> biome = this.player.level().getBiome(this.player.blockPosition());
-        Optional<ResourceKey<Biome>> biomeKey = biome.unwrapKey();
-        if (biomeKey.isEmpty()) return;
-
-        Music musicSound = BiomePlaylist.getMusicSound(biomeKey.get().location(), this.player.getRandom());
+        Music musicSound = BiomePlaylist.getEndMusic(this.player.getRandom());
         if (musicSound != null) {
             cir.setReturnValue(musicSound);
         }
     }
 
-    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;CREATIVE:Lnet/minecraft/sounds/Music;"), cancellable = true)
+    @Inject(method = "getSituationalMusic", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/Musics;CREATIVE:Lnet/minecraft/sounds/Music;", opcode = Opcodes.GETSTATIC), cancellable = true)
     private void updateCreativeMusic(CallbackInfoReturnable<Music> cir) {
         if (this.player == null) return;
 
