@@ -20,9 +20,9 @@ public class NowPlayingCmd {
     }
 
     public static int nowPlaying(CommandContext<CommandSourceStack> context) {
-        Timm.LOGGER.info("[TIMMOD] SONG_ID: {}", SONG_ID);
+        Timm.debugLog("[TIMMOD] SONG_ID: " + SONG_ID);
         Component song = Songs.getSongText(SONG_ID);
-        Timm.LOGGER.info("[TIMMMOD] Song: {}", song);
+        Timm.debugLog("[TIMMMOD] Song: " + (song == null ? "null" : song.getString()));
         Component text = song == null
                 ? Component.translatable("cmd.nowPlaying.none")
                 : Component.translatable("record.nowPlaying", song);

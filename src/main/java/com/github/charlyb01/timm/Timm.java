@@ -38,7 +38,9 @@ public class Timm
     }
 
     public static void debugLog(String debugString) {
-        LOGGER.info(debugString);
+        if (Config.DEBUG_LOG.get()) {
+            LOGGER.info(debugString);
+        }
     }
 
     public Timm()

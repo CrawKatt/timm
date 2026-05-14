@@ -61,6 +61,12 @@ public class ModConfigScreen {
                 .build());
 
         general.addEntry(entryBuilder
+                .startBooleanToggle(Component.translatable("text.autoconfig.timm.option.general.debugLog"), Config.DEBUG_LOG.get())
+                .setDefaultValue(false)
+                .setSaveConsumer(Config.DEBUG_LOG::set)
+                .build());
+
+        general.addEntry(entryBuilder
                 .startBooleanToggle(Component.literal("Enable structure songs playing"), Config.ENABLE_STRUCTURE_MUSIC.get())
                 .setDefaultValue(true)
                 .setSaveConsumer(Config.ENABLE_STRUCTURE_MUSIC::set)
